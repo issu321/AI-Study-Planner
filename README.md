@@ -36,6 +36,7 @@
 </p>
 
 > **🚀 Launch your entire education ecosystem with a single command. The Super Admin account is auto-created on first boot — log in and begin managing instantly.**
+> **AI Study Planner is a premium, multi-tenant education management system built on Flask. It empowers institutions to manage unlimited colleges, departments, teachers, and students under a single unified platform. The system features role-based access control with three distinct portals — Super Admin, Teacher, and Student — each tailored to their specific workflow.**
 
 ---
 
