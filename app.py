@@ -2013,8 +2013,6 @@ if __name__ == '__main__':
     print("  Developer: Mohammed Usman | GitHub: issu321")
     print("  Contact: 8884294749 | jaafreeusman@gmail.com")
     print("=" * 60)
-    print(f"  Default Admin: username={Config.DEFAULT_ADMIN_USERNAME}")
-    print(f"  Default Pass:  {Config.DEFAULT_ADMIN_PASSWORD}")
     print("=" * 60)
     print("  Starting server at http://localhost:5000")
     print("=" * 60)
