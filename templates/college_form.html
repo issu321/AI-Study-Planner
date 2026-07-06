@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ 'Edit' if edit_mode else 'Create' }} College{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width: 900px;">
+    <div class="mb-4">
+        <a href="{{ url_for('admin_colleges') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Colleges</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">
+                {% if edit_mode %}
+                    <i class="fas fa-edit text-primary me-2"></i>Edit College
+                {% else %}
+                    <i class="fas fa-plus-circle text-primary me-2"></i>Create New College
+                {% endif %}
+            </h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" data-validate>
+                <div class="row g-3">
+                    <!-- Basic Info -->
+                    <div class="col-12">
+                        <h6 class="section-title"><i class="fas fa-info-circle"></i> Basic Information</h6>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">College Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" value="{{ college.name if edit_mode else '' }}" placeholder="e.g., Harvard University" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">College Code <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="code" value="{{ college.code if edit_mode else '' }}" placeholder="e.g., HU001" required {% if edit_mode %}readonly{% endif %}>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="2" placeholder="Brief description of the college">{{ college.description if edit_mode else '' }}</textarea>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-12 mt-2">
+                        <h6 class="section-title"><i class="fas fa-address-card"></i> Contact Information</h6>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" name="address" rows="2" placeholder="Full address">{{ college.address if edit_mode else '' }}</textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control" name="city" value="{{ college.city if edit_mode else '' }}" placeholder="City">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">State</label>
+                        <input type="text" class="form-control" name="state" value="{{ college.state if edit_mode else '' }}" placeholder="State">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-control" name="country" value="{{ college.country if edit_mode else 'India' }}" placeholder="Country">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">ZIP Code</label>
+                        <input type="text" class="form-control" name="zip_code" value="{{ college.zip_code if edit_mode else '' }}" placeholder="ZIP">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" name="phone" value="{{ college.phone if edit_mode else '' }}" placeholder="Phone number">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" value="{{ college.email if edit_mode else '' }}" placeholder="College email">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Website</label>
+                        <input type="url" class="form-control" name="website" value="{{ college.website if edit_mode else '' }}" placeholder="https://example.edu">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Principal Name</label>
+                        <input type="text" class="form-control" name="principal_name" value="{{ college.principal_name if edit_mode else '' }}" placeholder="Principal's full name">
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="col-12 mt-2">
+                        <h6 class="section-title"><i class="fas fa-cog"></i> Additional Details</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Established Year</label>
+                        <input type="number" class="form-control" name="established_year" value="{{ college.established_year if edit_mode else '' }}" placeholder="e.g., 1990" min="1800" max="2030">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Accreditation</label>
+                        <input type="text" class="form-control" name="accreditation" value="{{ college.accreditation if edit_mode else '' }}" placeholder="e.g., NAAC A+">
+                    </div>
+                    {% if edit_mode %}
+                    <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status">
+                            <option value="active" {% if college.status == 'active' %}selected{% endif %}>Active</option>
+                            <option value="inactive" {% if college.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                            <option value="suspended" {% if college.status == 'suspended' %}selected{% endif %}>Suspended</option>
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <!-- Media -->
+                    <div class="col-12 mt-2">
+                        <h6 class="section-title"><i class="fas fa-images"></i> Branding</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">College Logo</label>
+                        <input type="file" class="form-control" name="logo" accept="image/*">
+                        {% if edit_mode and college.logo %}
+                        <div class="mt-2">
+                            <img src="{{ college.logo }}" alt="Current logo" style="height: 60px; border-radius: var(--radius); border: 1px solid var(--border-color);">
+                            <small class="text-muted ms-2">Current logo</small>
+                        </div>
+                        {% endif %}
+                        <small class="text-muted">Recommended: 200x200px, PNG or JPG</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Banner Image</label>
+                        <input type="file" class="form-control" name="banner" accept="image/*">
+                        {% if edit_mode and college.banner_image %}
+                        <div class="mt-2">
+                            <img src="{{ college.banner_image }}" alt="Current banner" style="height: 60px; border-radius: var(--radius); border: 1px solid var(--border-color);">
+                            <small class="text-muted ms-2">Current banner</small>
+                        </div>
+                        {% endif %}
+                        <small class="text-muted">Recommended: 1200x400px, PNG or JPG</small>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="col-12 mt-4">
+                        <hr>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{{ url_for('admin_colleges') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>{{ 'Update College' if edit_mode else 'Create College' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

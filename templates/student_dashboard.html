@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="page-title"><i class="fas fa-user-graduate text-primary me-2"></i>Student Dashboard</h2><p class="page-subtitle">Welcome back, {{ current_user.full_name() }}</p></div>
+        <a href="{{ url_for('study_planner') }}" class="btn btn-primary"><i class="fas fa-brain me-2"></i>AI Study Planner</a>
+    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">My Subjects</div><div class="stat-value">{{ stats.my_subjects }}</div></div><div class="stat-icon bg-primary-soft"><i class="fas fa-book"></i></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">My Teachers</div><div class="stat-value">{{ stats.my_teachers }}</div></div><div class="stat-icon bg-success-soft"><i class="fas fa-chalkboard-teacher"></i></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Pending Work</div><div class="stat-value">{{ stats.pending_assignments }}</div></div><div class="stat-icon bg-warning-soft"><i class="fas fa-clock"></i></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Avg Score</div><div class="stat-value">{{ "%.0f"|format(stats.avg_score) }}%</div></div><div class="stat-icon bg-info-soft"><i class="fas fa-chart-line"></i></div></div></div></div>
+    </div>
+    {% if suggestions %}
+    <div class="card mb-4" style="border-left: 4px solid var(--warning);">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>AI Recommendations</h6>
+            <div class="row g-3">
+                {% for s in suggestions %}
+                <div class="col-md-4"><div class="d-flex align-items-center p-3 bg-light rounded"><i class="fas fa-arrow-up text-danger me-3"></i><div><div class="fw-semibold">{{ s.subject_name }}</div><small class="text-muted">{{ s.reason }} | {{ s.recommended_hours }}h/day</small></div></div></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between"><h5 class="mb-0"><i class="fas fa-tasks text-primary me-2"></i>Quick Access</h5></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4"><a href="{{ url_for('student_subjects') }}" class="btn btn-outline-primary w-100 py-3"><i class="fas fa-book fa-lg mb-2 d-block"></i><span class="fw-semibold">My Subjects</span></a></div>
+                        <div class="col-md-4"><a href="{{ url_for('student_materials') }}" class="btn btn-outline-success w-100 py-3"><i class="fas fa-file-alt fa-lg mb-2 d-block"></i><span class="fw-semibold">Materials</span></a></div>
+                        <div class="col-md-4"><a href="{{ url_for('student_assignments') }}" class="btn btn-outline-warning w-100 py-3"><i class="fas fa-tasks fa-lg mb-2 d-block"></i><span class="fw-semibold">Assignments</span></a></div>
+                        <div class="col-md-4"><a href="{{ url_for('student_tests') }}" class="btn btn-outline-info w-100 py-3"><i class="fas fa-clipboard-list fa-lg mb-2 d-block"></i><span class="fw-semibold">Tests</span></a></div>
+                        <div class="col-md-4"><a href="{{ url_for('student_teachers') }}" class="btn btn-outline-secondary w-100 py-3"><i class="fas fa-chalkboard-teacher fa-lg mb-2 d-block"></i><span class="fw-semibold">My Teachers</span></a></div>
+                        <div class="col-md-4"><a href="{{ url_for('study_planner') }}" class="btn btn-primary w-100 py-3"><i class="fas fa-brain fa-lg mb-2 d-block"></i><span class="fw-semibold">AI Planner</span></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100" style="background: var(--primary-gradient); color: white;">
+                <div class="card-body text-center">
+                    <i class="fas fa-brain fa-3x mb-3 opacity-75"></i>
+                    <h5 class="fw-bold mb-2">AI Study Planner</h5>
+                    <p class="opacity-75 mb-3">Get personalized study schedules based on your subjects, deadlines, and performance.</p>
+                    <a href="{{ url_for('study_planner') }}" class="btn btn-light">Generate Plan <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

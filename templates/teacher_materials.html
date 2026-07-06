@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Study Materials{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title"><i class="fas fa-file-alt text-primary me-2"></i>Study Materials</h2>
+            <p class="page-subtitle">Upload and manage study resources</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="fas fa-upload me-2"></i>Upload Material
+        </button>
+    </div>
+    {% if materials.items %}
+    <div class="row g-3">
+        {% for m in materials.items %}
+        <div class="col-md-6">
+            <div class="document-card">
+                <div class="document-icon"><i class="fas {{ get_file_icon(m.file_type or 'file') }}"></i></div>
+                <div class="flex-grow-1 min-width-0">
+                    <h6 class="mb-1 text-truncate">{{ m.title }}</h6>
+                    <p class="text-muted small mb-1 text-truncate">{{ m.description or 'No description' }}</p>
+                    <div class="d-flex gap-2 text-muted small">
+                        <span class="badge-subject">{{ m.subject.name if m.subject else 'N/A' }}</span>
+                        <span><i class="fas fa-download me-1"></i>{{ m.download_count }}</span>
+                        <span>{{ format_file_size(m.file_size) if m.file_size else 'N/A' }}</span>
+                    </div>
+                </div>
+                <div class="ms-2">
+                    {% if m.file_path %}<a href="{{ m.file_path }}" class="btn btn-sm btn-outline-primary btn-icon" download title="Download"><i class="fas fa-download"></i></a>{% endif %}
+                    <form method="POST" action="{{ url_for('delete_material', material_id=m.id) }}" class="d-inline" onsubmit="return confirm('Delete this material?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if materials.pages > 1 %}
+    <nav class="mt-4"><ul class="pagination justify-content-center">
+        {% if materials.has_prev %}<li class="page-item"><a class="page-link" href="{{ url_for('teacher_materials', page=materials.prev_num, subject_id=current_subject_id) }}"><i class="fas fa-chevron-left"></i></a></li>{% endif %}
+        {% for p in materials.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}{% if p %}<li class="page-item {% if p == materials.page %}active{% endif %}"><a class="page-link" href="{{ url_for('teacher_materials', page=p, subject_id=current_subject_id) }}">{{ p }}</a></li>{% else %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}{% endfor %}
+        {% if materials.has_next %}<li class="page-item"><a class="page-link" href="{{ url_for('teacher_materials', page=materials.next_num, subject_id=current_subject_id) }}"><i class="fas fa-chevron-right"></i></a></li>{% endif %}
+    </ul></nav>
+    {% endif %}
+    {% else %}
+    <div class="empty-state py-5">
+        <div class="empty-state-icon"><i class="fas fa-file-alt"></i></div>
+        <h5 class="empty-state-title">No Materials Yet</h5>
+        <p class="empty-state-text">Upload study notes, presentations, and resources for your students</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal"><i class="fas fa-upload me-2"></i>Upload Material</button>
+    </div>
+    {% endif %}
+</div>
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title"><i class="fas fa-upload text-primary me-2"></i>Upload Material</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <form method="POST" action="{{ url_for('upload_material') }}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label">Title <span class="text-danger">*</span></label><input type="text" class="form-control" name="title" required></div>
+                    <div class="mb-3"><label class="form-label">Subject <span class="text-danger">*</span></label>
+                        <select class="form-select" name="subject_id" required>
+                            <option value="">Select Subject</option>
+                            {% for s in subjects %}<option value="{{ s.id }}">{{ s.name }} ({{ s.code }})</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Content Type</label>
+                        <select class="form-select" name="content_type">
+                            <option value="notes">Notes</option><option value="presentation">Presentation</option>
+                            <option value="reference">Reference</option><option value="video_link">Video Link</option>
+                        </select>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="2"></textarea></div>
+                    <div class="mb-3"><label class="form-label">File</label><input type="file" class="form-control" name="file"></div>
+                    <div class="mb-3"><label class="form-label">External Link (optional)</label><input type="url" class="form-control" name="external_link" placeholder="https://..."></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-upload me-2"></i>Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

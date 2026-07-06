@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Tests & Exams{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="page-title"><i class="fas fa-clipboard-list text-primary me-2"></i>Tests & Exams</h2><p class="page-subtitle">Available tests for your subjects</p></div>
+        <a href="{{ url_for('test_history') }}" class="btn btn-outline-primary"><i class="fas fa-history me-2"></i>My History</a>
+    </div>
+    {% if tests_data %}
+    <div class="row g-4">
+        {% for td in tests_data %}
+        {% set t = td.test %}
+        <div class="col-md-6">
+            <div class="card h-100 {% if not td.can_attempt %}border-secondary opacity-75{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2"><span class="badge-subject">{{ t.subject.name if t.subject else 'N/A' }}</span>{% if td.can_attempt %}<span class="badge bg-success">Available</span>{% else %}<span class="badge bg-secondary">Completed</span>{% endif %}</div>
+                    <h5 class="fw-bold mb-2">{{ t.title }}</h5>
+                    <p class="text-muted small mb-3">{{ t.description[:100] if t.description else 'No description' }}{% if t.description and t.description|length > 100 %}...{% endif %}</p>
+                    <div class="d-flex gap-3 text-muted small mb-3">
+                        <span><i class="fas fa-clock me-1 text-primary"></i>{{ t.duration_minutes }} mins</span>
+                        <span><i class="fas fa-star me-1 text-primary"></i>{{ t.total_marks }} Marks</span>
+                        <span><i class="fas fa-question-circle me-1 text-primary"></i>{{ t.questions.count() }} Qs</span>
+                        <span><i class="fas fa-redo me-1 text-primary"></i>{{ td.attempts }}/{{ t.max_attempts }}</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    {% if td.can_attempt %}<a href="{{ url_for('take_test', test_id=t.id) }}" class="btn btn-primary w-100"><i class="fas fa-play me-2"></i>Start Test</a>
+                    {% else %}<button class="btn btn-secondary w-100" disabled><i class="fas fa-check-circle me-2"></i>Completed</button>{% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}<div class="empty-state py-5"><div class="empty-state-icon"><i class="fas fa-clipboard-list"></i></div><h5 class="empty-state-title">No Tests Available</h5><p class="empty-state-text">No published tests for your enrolled subjects</p></div>{% endif %}
+</div>
+{% endblock %}

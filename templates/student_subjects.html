@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}My Subjects{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Enrolled Subjects Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="page-title"><i class="fas fa-book text-primary me-2"></i>My Subjects</h2><p class="page-subtitle">Subjects you are enrolled in</p></div>
+    </div>
+
+    {% if subjects %}
+    <div class="row g-4 mb-5">
+        {% for subject in subjects %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100" style="border-left: 4px solid var(--primary);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge-subject">{{ subject.code }}</span>
+                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Enrolled</span>
+                    </div>
+                    <h5 class="fw-bold mb-2">{{ subject.name }}</h5>
+                    <p class="text-muted small mb-2">{{ subject.description[:80] if subject.description else 'No description' }}{% if subject.description and subject.description|length > 80 %}...{% endif %}</p>
+                    <small class="text-muted"><i class="fas fa-chalkboard-teacher me-1"></i>{{ subject.teacher.user.full_name() if subject.teacher and subject.teacher.user else 'Unassigned' }}</small>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="{{ url_for('student_materials') }}?subject_id={{ subject.id }}" class="btn btn-sm btn-outline-primary flex-fill"><i class="fas fa-file-alt me-1"></i>Materials</a>
+                        <a href="{{ url_for('student_assignments') }}" class="btn btn-sm btn-outline-warning flex-fill"><i class="fas fa-tasks me-1"></i>Assignments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state py-4 mb-5">
+        <div class="empty-state-icon" style="width:70px;height:70px;font-size:1.8rem;"><i class="fas fa-book-open"></i></div>
+        <h5 class="empty-state-title">No Subjects Enrolled</h5>
+        <p class="empty-state-text">You haven't enrolled in any subjects yet. Check available subjects below.</p>
+    </div>
+    {% endif %}
+
+    <!-- Available Subjects Section -->
+    {% if available_subjects %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="page-title"><i class="fas fa-plus-circle text-success me-2"></i>Available Subjects</h2><p class="page-subtitle">Subjects you can enroll in from your college</p></div>
+    </div>
+    <div class="row g-4">
+        {% for subject in available_subjects %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100" style="border-left: 4px solid var(--success);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge-subject">{{ subject.code }}</span>
+                        <span class="badge bg-info">Available</span>
+                    </div>
+                    <h5 class="fw-bold mb-2">{{ subject.name }}</h5>
+                    <p class="text-muted small mb-2">{{ subject.description[:80] if subject.description else 'No description' }}{% if subject.description and subject.description|length > 80 %}...{% endif %}</p>
+                    <small class="text-muted"><i class="fas fa-chalkboard-teacher me-1"></i>{{ subject.teacher.user.full_name() if subject.teacher and subject.teacher.user else 'Unassigned' }}</small>
+                    <div class="d-flex gap-2 mt-3">
+                        <form method="POST" action="{{ url_for('enroll_subject', subject_id=subject.id) }}" class="flex-fill">
+                            <button type="submit" class="btn btn-sm btn-success w-100"><i class="fas fa-user-plus me-1"></i>Enroll Now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

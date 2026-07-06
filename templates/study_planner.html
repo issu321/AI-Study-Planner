@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}AI Study Planner{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="planner-header">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-2"><i class="fas fa-brain me-2"></i>AI Study Planner</h2>
+                <p class="mb-0 opacity-75">Generate personalized study schedules powered by artificial intelligence</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#generatePlanModal"><i class="fas fa-magic me-2"></i>Generate New Plan</button>
+            </div>
+        </div>
+    </div>
+    {% if suggestions %}
+    <div class="card mb-4" style="border-left: 4px solid var(--warning);">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Focus Areas</h6>
+            <div class="row g-3">
+                {% for s in suggestions %}
+                <div class="col-md-4"><div class="d-flex align-items-center p-3 bg-light rounded"><i class="fas fa-arrow-up text-danger me-3"></i><div><div class="fw-semibold">{{ s.subject_name }}</div><small class="text-muted">{{ s.reason }} | Suggested: {{ s.recommended_hours }}h/day</small></div></div></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if pattern_analysis and pattern_analysis.patterns %}
+    <div class="card mb-4">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-chart-line text-primary me-2"></i>Study Pattern Analysis</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6"><div class="p-3 bg-primary bg-opacity-10 rounded"><h6 class="fw-bold text-primary">Best Study Time: {{ pattern_analysis.best_study_time|title }}</h6><p class="mb-0 small text-muted">{{ pattern_analysis.recommendation }}</p></div></div>
+                <div class="col-md-6"><div class="p-3 bg-success bg-opacity-10 rounded"><h6 class="fw-bold text-success">Average Score: {{ pattern_analysis.average_score }}%</h6><p class="mb-0 small text-muted">Based on {{ pattern_analysis.total_attempts }} test attempts</p></div></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if plans %}
+    <h5 class="mb-3"><i class="fas fa-list text-primary me-2"></i>Your Study Plans</h5>
+    <div class="row g-4">
+        {% for plan in plans %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="fw-bold mb-0">{{ plan.title }}</h5>
+                        <span class="badge bg-{{ 'success' if plan.status == 'completed' else 'primary' }}">{{ plan.status|title }}</span>
+                    </div>
+                    <p class="text-muted small">{{ plan.description or 'No description' }}</p>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1"><span>Progress</span><span>{{ "%.0f"|format(plan.progress_percentage) }}%</span></div>
+                        <div class="progress"><div class="progress-bar" data-progress="{{ plan.progress_percentage }}" style="width: 0%"></div></div>
+                    </div>
+                    <div class="d-flex gap-3 text-muted small">
+                        <span><i class="fas fa-clock me-1 text-primary"></i>{{ plan.daily_hours }}h/day</span>
+                        <span><i class="fas fa-calendar me-1 text-primary"></i>{{ plan.created_at.strftime('%d %b') if plan.created_at else '' }}</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <div class="d-flex gap-2"><a href="{{ url_for('view_study_plan', plan_id=plan.id) }}" class="btn btn-sm btn-primary flex-fill"><i class="fas fa-eye me-1"></i>View</a>
+                        <form method="POST" action="{{ url_for('delete_study_plan', plan_id=plan.id) }}" class="d-inline" onsubmit="return confirm('Delete this plan?');"><button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button></form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card"><div class="card-body text-center py-5">
+        <div class="empty-state-icon mx-auto mb-3"><i class="fas fa-brain"></i></div>
+        <h5 class="empty-state-title">No Study Plans Yet</h5>
+        <p class="empty-state-text">Generate your first AI-powered study plan to get started</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generatePlanModal"><i class="fas fa-magic me-2"></i>Generate Study Plan</button>
+    </div></div>
+    {% endif %}
+</div>
+<div class="modal fade" id="generatePlanModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title"><i class="fas fa-magic text-primary me-2"></i>Generate Study Plan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <form method="POST" action="{{ url_for('generate_study_plan') }}">
+            <div class="modal-body">
+                <div class="mb-3"><label class="form-label">Plan Title <span class="text-danger">*</span></label><input type="text" class="form-control" name="title" placeholder="e.g., Final Exam Prep" required></div>
+                <div class="mb-3"><label class="form-label">Study Hours per Day</label><input type="number" class="form-control" name="daily_hours" value="6" min="1" max="12" step="0.5"></div>
+                <div class="mb-3"><label class="form-label">Target Date (optional)</label><input type="date" class="form-control" name="target_date"></div>
+                <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="2"></textarea></div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-magic me-2"></i>Generate Plan</button></div>
+        </form>
+    </div></div>
+</div>
+{% endblock %}

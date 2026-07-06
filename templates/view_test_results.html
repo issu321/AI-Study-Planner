@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{{ test.title }} - Results{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-3"><a href="{{ url_for('teacher_tests') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Tests</a></div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="fw-bold">{{ test.title }} - Results</h4>
+            {% if stats %}
+            <div class="row g-3 mt-2">
+                <div class="col-md-3 text-center"><div class="stat-value">{{ stats.total_attempts }}</div><div class="stat-label">Total Attempts</div></div>
+                <div class="col-md-3 text-center"><div class="stat-value">{{ stats.average_score }}%</div><div class="stat-label">Average Score</div></div>
+                <div class="col-md-3 text-center"><div class="stat-value">{{ stats.highest_score }}%</div><div class="stat-label">Highest Score</div></div>
+                <div class="col-md-3 text-center"><div class="stat-value">{{ stats.pass_count }}/{{ stats.total_attempts }}</div><div class="stat-label">Passed</div></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Student Results</h6></div>
+        <div class="card-body p-0">
+            {% if attempts %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead><tr><th class="ps-4">Student</th><th>Score</th><th>Percentage</th><th>Time Taken</th><th>Submitted</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for a in attempts %}
+                        <tr>
+                            <td class="ps-4 fw-semibold">{{ a.student.user.full_name() }}</td>
+                            <td>{{ a.score }}/{{ a.total_marks }}</td>
+                            <td><span class="badge bg-{{ 'success' if a.percentage >= 40 else 'danger' }}">{{ a.percentage }}%</span></td>
+                            <td>{{ a.time_taken_minutes or 'N/A' }} mins</td>
+                            <td><small class="text-muted">{{ a.completed_at.strftime('%d %b, %H:%M') if a.completed_at else 'N/A' }}</small></td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}<div class="empty-state py-4"><div class="empty-state-icon" style="width:60px;height:60px;font-size:1.5rem;"><i class="fas fa-chart-bar"></i></div><p class="text-muted">No attempts yet</p></div>{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

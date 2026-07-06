@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Study Materials{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="page-title"><i class="fas fa-file-alt text-primary me-2"></i>Study Materials</h2><p class="page-subtitle">Notes, presentations, and resources from your teachers</p></div>
+        <form method="GET" class="d-flex gap-2">
+            <select class="form-select" name="subject_id" onchange="this.form.submit()">
+                <option value="">All Subjects</option>
+                {% for s in subjects %}<option value="{{ s.id }}" {% if current_subject_id == s.id %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+            </select>
+        </form>
+    </div>
+    {% if materials.items %}
+    <div class="row g-3">
+        {% for m in materials.items %}
+        <div class="col-md-6">
+            <div class="document-card">
+                <div class="document-icon"><i class="fas {{ get_file_icon(m.file_type or 'file') }}"></i></div>
+                <div class="flex-grow-1 min-width-0">
+                    <h6 class="mb-1 text-truncate">{{ m.title }}</h6>
+                    <p class="text-muted small mb-1 text-truncate">{{ m.description or 'No description' }}</p>
+                    <div class="d-flex gap-2 text-muted small"><span class="badge-subject">{{ m.subject.name if m.subject else 'N/A' }}</span><span>{{ m.content_type|title }}</span><span>{{ m.created_at.strftime('%d %b') if m.created_at else '' }}</span></div>
+                </div>
+                <div class="ms-2"><a href="{{ url_for('download_material', material_id=m.id) }}" class="btn btn-sm btn-primary btn-icon" title="Download"><i class="fas fa-download"></i></a></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}<div class="empty-state py-5"><div class="empty-state-icon"><i class="fas fa-file-alt"></i></div><h5 class="empty-state-title">No Materials</h5><p class="empty-state-text">Study materials from your enrolled subjects will appear here</p></div>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Colleges{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title"><i class="fas fa-university text-primary me-2"></i>Colleges</h2>
+            <p class="page-subtitle">Manage all educational institutions</p>
+        </div>
+        <a href="{{ url_for('create_college') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add College
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" name="search" placeholder="Search colleges..." value="{{ search or '' }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        <option value="">All Status</option>
+                        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="suspended" {% if status == 'suspended' %}selected{% endif %}>Suspended</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-2"></i>Filter</button>
+                    <a href="{{ url_for('admin_colleges') }}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Colleges Grid -->
+    {% if colleges.items %}
+    <div class="row g-4">
+        {% for college in colleges.items %}
+        <div class="col-md-6 col-lg-4">
+            <div class="college-card h-100">
+                <div class="college-card-banner" style="{% if college.banner_image %}background: url('{{ college.banner_image }}') center/cover;{% endif %}">
+                    <div class="college-card-logo">
+                        {% if college.logo %}
+                            <img src="{{ college.logo }}" alt="{{ college.name }}">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 fw-bold" style="font-size: 1.5rem; background: var(--primary-light); color: var(--primary);">
+                                {{ college.name[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="college-card-body">
+                    <h5 class="college-card-title">{{ college.name }}</h5>
+                    <span class="college-card-code">{{ college.code }}</span>
+                    {% if college.description %}
+                    <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem;">{{ college.description[:100] }}{% if college.description|length > 100 %}...{% endif %}</p>
+                    {% endif %}
+                    <div class="college-card-meta">
+                        {% if college.city %}<span><i class="fas fa-map-marker-alt"></i> {{ college.city }}</span>{% endif %}
+                        {% if college.established_year %}<span><i class="fas fa-calendar"></i> Est. {{ college.established_year }}</span>{% endif %}
+                        <span><i class="fas fa-users"></i> {{ college.total_students }} Students</span>
+                    </div>
+                </div>
+                <div class="college-card-footer">
+                    <span class="college-status status-{{ college.status }}">{{ college.status|title }}</span>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('view_college', college_id=college.id) }}"><i class="fas fa-eye me-2"></i>View Details</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('manage_departments', college_id=college.id) }}"><i class="fas fa-sitemap me-2"></i>Departments</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('edit_college', college_id=college.id) }}"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ url_for('delete_college', college_id=college.id) }}" class="d-inline" onsubmit="return confirm('Delete this college? All associated data will be removed.');">
+                                    <button type="submit" class="dropdown-item text-danger"><i class="fas fa-trash me-2"></i>Delete</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if colleges.pages > 1 %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if colleges.has_prev %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('admin_colleges', page=colleges.prev_num, search=search, status=status) }}"><i class="fas fa-chevron-left"></i></a></li>
+            {% endif %}
+            {% for page_num in colleges.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == colleges.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin_colleges', page=page_num, search=search, status=status) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if colleges.has_next %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('admin_colleges', page=colleges.next_num, search=search, status=status) }}"><i class="fas fa-chevron-right"></i></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <div class="empty-state-icon mx-auto mb-3">
+                <i class="fas fa-university"></i>
+            </div>
+            <h5>No Colleges Found</h5>
+            <p class="text-muted">Get started by creating your first college</p>
+            <a href="{{ url_for('create_college') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create College
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ app_name }}{% endblock %} | {{ app_name }}</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <div class="brand-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <span class="brand-text">AI Study<span class="brand-highlight">Planner</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}">
+                                <i class="fas fa-th-large"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('messages') }}">
+                                <i class="fas fa-envelope"></i> Messages
+                                {% if unread_messages > 0 %}
+                                    <span class="badge bg-danger rounded-pill">{{ unread_messages }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('notifications') }}">
+                                <i class="fas fa-bell"></i>
+                                {% if unread_notifications > 0 %}
+                                    <span class="badge bg-danger rounded-pill">{{ unread_notifications }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle user-dropdown" href="#" data-bs-toggle="dropdown">
+                                {% if current_user.avatar %}
+                                    <img src="{{ current_user.avatar }}" class="user-avatar-sm" alt="">
+                                {% else %}
+                                    <div class="user-avatar-sm default-avatar">
+                                        {{ current_user.first_name[0] }}{{ current_user.last_name[0] }}
+                                    </div>
+                                {% endif %}
+                                <span class="d-none d-lg-inline">{{ user_full_name }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                                <li class="dropdown-header">
+                                    <strong>{{ user_full_name }}</strong><br>
+                                    <small class="text-muted">{{ user_role|title }}</small>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard') }}"><i class="fas fa-th-large me-2"></i>Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('developer') }}"><i class="fas fa-code"></i> Developer</a></li>
+                        <li class="nav-item ms-lg-2"><a class="btn btn-primary btn-sm" href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                        <li class="nav-item ms-lg-1"><a class="btn btn-outline-primary btn-sm" href="{{ url_for('register') }}"><i class="fas fa-user-plus"></i> Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar for Authenticated Users -->
+    {% if current_user.is_authenticated %}
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-toggle d-lg-none" id="sidebarToggle">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <!-- Super Admin Menu -->
+            {% if current_user.is_super_admin() %}
+            <div class="menu-section">
+                <span class="menu-label">Administration</span>
+                <a class="menu-item {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                    <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['admin_colleges', 'create_college', 'edit_college', 'view_college'] %}active{% endif %}" href="{{ url_for('admin_colleges') }}">
+                    <i class="fas fa-university"></i> <span>Colleges</span>
+                </a>
+                <a class="menu-item {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                    <i class="fas fa-users-cog"></i> <span>Users</span>
+                </a>
+                <a class="menu-item {% if request.endpoint == 'admin_analytics' %}active{% endif %}" href="{{ url_for('admin_analytics') }}">
+                    <i class="fas fa-chart-line"></i> <span>Analytics</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Teacher Menu -->
+            {% if current_user.is_teacher() %}
+            <div class="menu-section">
+                <span class="menu-label">Teaching</span>
+                <a class="menu-item {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                    <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['teacher_subjects', 'view_teacher_subject'] %}active{% endif %}" href="{{ url_for('teacher_subjects') }}">
+                    <i class="fas fa-book"></i> <span>My Subjects</span>
+                </a>
+                <a class="menu-item {% if request.endpoint == 'teacher_materials' %}active{% endif %}" href="{{ url_for('teacher_materials') }}">
+                    <i class="fas fa-file-alt"></i> <span>Materials</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['teacher_assignments', 'view_submissions'] %}active{% endif %}" href="{{ url_for('teacher_assignments') }}">
+                    <i class="fas fa-tasks"></i> <span>Assignments</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['teacher_tests', 'create_test', 'edit_test_questions'] %}active{% endif %}" href="{{ url_for('teacher_tests') }}">
+                    <i class="fas fa-clipboard-list"></i> <span>Tests & Exams</span>
+                </a>
+                <a class="menu-item {% if request.endpoint == 'teacher_students' %}active{% endif %}" href="{{ url_for('teacher_students') }}">
+                    <i class="fas fa-user-graduate"></i> <span>Students</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Student Menu -->
+            {% if current_user.is_student() %}
+            <div class="menu-section">
+                <span class="menu-label">Learning</span>
+                <a class="menu-item {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                    <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['student_colleges', 'view_college_detail'] %}active{% endif %}" href="{{ url_for('student_colleges') }}">
+                    <i class="fas fa-university"></i> <span>Browse Colleges</span>
+                </a>
+                <a class="menu-item {% if request.endpoint == 'student_subjects' %}active{% endif %}" href="{{ url_for('student_subjects') }}">
+                    <i class="fas fa-book"></i> <span>My Subjects</span>
+                </a>
+                <a class="menu-item {% if request.endpoint == 'student_teachers' %}active{% endif %}" href="{{ url_for('student_teachers') }}">
+                    <i class="fas fa-chalkboard-teacher"></i> <span>My Teachers</span>
+                </a>
+            </div>
+            <div class="menu-section">
+                <span class="menu-label">Study</span>
+                <a class="menu-item {% if request.endpoint == 'student_materials' %}active{% endif %}" href="{{ url_for('student_materials') }}">
+                    <i class="fas fa-file-alt"></i> <span>Study Materials</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['student_assignments', 'submit_assignment'] %}active{% endif %}" href="{{ url_for('student_assignments') }}">
+                    <i class="fas fa-tasks"></i> <span>Assignments</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['student_tests', 'take_test', 'test_result', 'test_history'] %}active{% endif %}" href="{{ url_for('student_tests') }}">
+                    <i class="fas fa-clipboard-check"></i> <span>Tests & Exams</span>
+                </a>
+                <a class="menu-item {% if request.endpoint in ['study_planner', 'view_study_plan'] %}active{% endif %}" href="{{ url_for('study_planner') }}">
+                    <i class="fas fa-brain"></i> <span>AI Study Planner</span>
+                    <span class="badge bg-gradient ms-auto">AI</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Common Menu -->
+            <div class="menu-section">
+                <span class="menu-label">Communication</span>
+                <a class="menu-item {% if request.endpoint in ['messages', 'compose_message', 'view_message', 'sent_messages'] %}active{% endif %}" href="{{ url_for('messages') }}">
+                    <i class="fas fa-envelope"></i> <span>Messages</span>
+                    {% if unread_messages > 0 %}
+                        <span class="badge bg-danger rounded-pill ms-auto">{{ unread_messages }}</span>
+                    {% endif %}
+                </a>
+                <a class="menu-item {% if request.endpoint == 'announcements' %}active{% endif %}" href="{{ url_for('announcements') }}">
+                    <i class="fas fa-bullhorn"></i> <span>Announcements</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <a class="menu-item" href="{{ url_for('developer') }}">
+                <i class="fas fa-code"></i> <span>Developer</span>
+            </a>
+            <div class="version-info">
+                <small>{{ app_name }} v{{ app_version }}</small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="main-content page-transition {% if current_user.is_authenticated %}has-sidebar{% endif %}">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category in ['warning', 'error', 'danger'] else 'info-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; {{ current_year }} {{ app_name }}. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Developed with <i class="fas fa-heart text-danger"></i> by <a href="{{ developer_github }}" target="_blank">{{ developer_name }}</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Mobile sidebar toggle with overlay
+    (function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        if (toggleBtn && sidebar && overlay) {
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+        }
+
+        // Close sidebar on menu item click (mobile)
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 991) {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                }
+            });
+        });
+
+        // Close navbar collapse when clicking outside
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        if (navbarCollapse && navbarToggler) {
+            document.addEventListener('click', function(e) {
+                if (!navbarCollapse.contains(e.target) && !navbarToggler.contains(e.target)) {
+                    const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                    if (bsCollapse) bsCollapse.hide();
+                }
+            });
+        }
+    })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

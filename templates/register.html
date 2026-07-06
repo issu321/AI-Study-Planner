@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card animate-scale-in" style="max-width: 550px;">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="auth-title">Create Account</h2>
+            <p class="auth-subtitle">Join as a Teacher or Student</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('register') }}" data-validate enctype="multipart/form-data">
+            <!-- Role Selection -->
+            <div class="mb-3">
+                <label class="form-label">I am a <span class="text-danger">*</span></label>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="form-check card p-3 text-center role-select" onclick="selectRole('teacher')" id="roleTeacherCard" style="cursor: pointer; border: 2px solid var(--border-color); border-radius: var(--radius); transition: var(--transition);">
+                            <input class="form-check-input d-none" type="radio" name="role" id="roleTeacher" value="teacher">
+                            <i class="fas fa-chalkboard-teacher fa-2x mb-2 text-primary"></i>
+                            <div class="fw-semibold">Teacher</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-check card p-3 text-center role-select" onclick="selectRole('student')" id="roleStudentCard" style="cursor: pointer; border: 2px solid var(--border-color); border-radius: var(--radius); transition: var(--transition);">
+                            <input class="form-check-input d-none" type="radio" name="role" id="roleStudent" value="student" checked>
+                            <i class="fas fa-user-graduate fa-2x mb-2 text-success"></i>
+                            <div class="fw-semibold">Student</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Personal Info -->
+            <div class="row g-2">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">First Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="first_name" placeholder="First name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="last_name" placeholder="Last name" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Username <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text">@</span>
+                    <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Email <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    <input type="email" class="form-control" name="email" placeholder="your@email.com" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    <input type="tel" class="form-control" name="phone" placeholder="Phone number">
+                </div>
+            </div>
+            
+            <div class="row g-2">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" name="password" id="regPassword" placeholder="Min 6 characters" required minlength="6">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" name="confirm_password" id="regConfirmPassword" placeholder="Repeat password" required>
+                </div>
+            </div>
+            
+            <!-- College Selection -->
+            <div class="mb-3">
+                <label class="form-label">Select College <span class="text-danger">*</span></label>
+                <select class="form-select" name="college_id" required>
+                    <option value="">-- Choose your college --</option>
+                    {% for college in colleges %}
+                    <option value="{{ college.id }}">{{ college.name }} ({{ college.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Teacher-specific fields -->
+            <div id="teacherFields" style="display: none;">
+                <div class="divider"></div>
+                <h6 class="mb-3"><i class="fas fa-chalkboard-teacher me-2 text-primary"></i>Teacher Details</h6>
+                <div class="row g-2">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Employee ID</label>
+                        <input type="text" class="form-control" name="employee_id" placeholder="Employee ID">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Experience (Years)</label>
+                        <input type="number" class="form-control" name="experience_years" placeholder="Years of experience" min="0">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Qualification</label>
+                    <input type="text" class="form-control" name="qualification" placeholder="e.g., Ph.D. in Computer Science">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Specialization</label>
+                    <input type="text" class="form-control" name="specialization" placeholder="Your area of expertise">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Designation</label>
+                    <select class="form-select" name="designation">
+                        <option value="Assistant Professor">Assistant Professor</option>
+                        <option value="Associate Professor">Associate Professor</option>
+                        <option value="Professor">Professor</option>
+                        <option value="HOD">Head of Department</option>
+                        <option value="Lecturer">Lecturer</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-control" name="bio" rows="2" placeholder="Short bio about yourself"></textarea>
+                </div>
+            </div>
+            
+            <!-- Student-specific fields -->
+            <div id="studentFields">
+                <div class="divider"></div>
+                <h6 class="mb-3"><i class="fas fa-user-graduate me-2 text-success"></i>Student Details</h6>
+                <div class="row g-2">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Roll Number</label>
+                        <input type="text" class="form-control" name="roll_number" placeholder="Roll number">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Enrollment Number</label>
+                        <input type="text" class="form-control" name="enrollment_number" placeholder="Enrollment number">
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Course</label>
+                        <input type="text" class="form-control" name="course" placeholder="e.g., B.Tech, B.Sc">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Semester</label>
+                        <select class="form-select" name="semester">
+                            {% for i in range(1, 9) %}
+                            <option value="{{ i }}">Semester {{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Batch Year</label>
+                    <input type="number" class="form-control" name="batch_year" placeholder="e.g., 2024" min="2000" max="2030">
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Guardian Name</label>
+                        <input type="text" class="form-control" name="guardian_name" placeholder="Guardian's name">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Guardian Phone</label>
+                        <input type="tel" class="form-control" name="guardian_phone" placeholder="Guardian's phone">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 mb-3 mt-2">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectRole(role) {
+    // Update radio
+    document.getElementById('roleTeacher').checked = (role === 'teacher');
+    document.getElementById('roleStudent').checked = (role === 'student');
+    
+    // Update card styles
+    const teacherCard = document.getElementById('roleTeacherCard');
+    const studentCard = document.getElementById('roleStudentCard');
+    
+    if (role === 'teacher') {
+        teacherCard.style.borderColor = 'var(--primary)';
+        teacherCard.style.background = 'var(--primary-light)';
+        studentCard.style.borderColor = 'var(--border-color)';
+        studentCard.style.background = 'white';
+        document.getElementById('teacherFields').style.display = 'block';
+        document.getElementById('studentFields').style.display = 'none';
+    } else {
+        studentCard.style.borderColor = 'var(--success)';
+        studentCard.style.background = '#f0fdf4';
+        teacherCard.style.borderColor = 'var(--border-color)';
+        teacherCard.style.background = 'white';
+        document.getElementById('teacherFields').style.display = 'none';
+        document.getElementById('studentFields').style.display = 'block';
+    }
+}
+
+// Initialize
+selectRole('student');
+</script>
+{% endblock %}

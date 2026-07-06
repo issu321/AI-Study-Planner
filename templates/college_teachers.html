@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ college.name }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-3"><a href="{{ url_for('student_colleges') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Colleges</a></div>
+    <div class="card mb-4 overflow-hidden">
+        <div style="height: 150px; background: {% if college.banner_image %}url('{{ college.banner_image }}') center/cover{% else %}var(--primary-gradient){% endif %}; position: relative;">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));"></div>
+            <div class="position-absolute bottom-0 start-0 p-3 text-white d-flex align-items-end gap-3">
+                <div style="width: 70px; height: 70px; background: white; border-radius: var(--radius); padding: 5px;">{% if college.logo %}<img src="{{ college.logo }}" class="w-100 h-100" style="object-fit: contain; border-radius: calc(var(--radius) - 2px);">{% else %}<div class="w-100 h-100 d-flex align-items-center justify-content-center fw-bold" style="background: var(--primary-light); color: var(--primary); border-radius: calc(var(--radius) - 2px); font-size: 1.5rem;">{{ college.name[0] }}</div>{% endif %}</div>
+                <div class="pb-1"><h3 class="mb-0 fw-bold">{{ college.name }}</h3><span class="badge bg-white text-dark">{{ college.code }}</span></div>
+            </div>
+        </div>
+        <div class="card-body pt-5">
+            <p class="text-muted">{{ college.description or 'No description' }}</p>
+            <div class="d-flex gap-3 small text-muted"><span><i class="fas fa-map-marker-alt me-1"></i>{{ college.city or 'N/A' }}</span><span><i class="fas fa-calendar me-1"></i>Est. {{ college.established_year or 'N/A' }}</span><span><i class="fas fa-users me-1"></i>{{ college.total_students }} Students</span></div>
+        </div>
+    </div>
+    {% if teacher_data %}
+    <h5 class="mb-3"><i class="fas fa-chalkboard-teacher text-primary me-2"></i>Faculty Members</h5>
+    <div class="row g-4">
+        {% for td in teacher_data %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-md me-3 d-flex align-items-center justify-content-center" style="background: var(--primary-light); color: var(--primary); font-weight: 700; width: 60px; height: 60px;">{{ td.teacher.user.first_name[0] }}{{ td.teacher.user.last_name[0] }}</div>
+                        <div><h5 class="mb-0 fw-bold">{{ td.teacher.user.full_name() }}</h5><small class="text-muted">{{ td.teacher.designation }}</small></div>
+                    </div>
+                    <p class="text-muted small mb-2">{{ td.teacher.qualification or '' }}</p>
+                    {% if td.teacher.bio %}<p class="text-muted small mb-3">{{ td.teacher.bio[:100] }}{% if td.teacher.bio|length > 100 %}...{% endif %}</p>{% endif %}
+                    <div class="mb-2"><strong class="small">Subjects:</strong><br>{% for s in td.subjects %}<span class="badge-subject me-1">{{ s.name }}</span>{% endfor %}</div>
+                    <small class="text-muted"><i class="fas fa-file-alt me-1"></i>{{ td.materials_count }} Materials</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}<div class="alert alert-info">No teachers registered yet.</div>{% endif %}
+</div>
+{% endblock %}

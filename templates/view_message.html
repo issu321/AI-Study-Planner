@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}{{ message.subject or 'Message' }}{% endblock %}
+{% block content %}
+<div class="container-fluid" style="max-width: 700px;">
+    <div class="mb-3"><a href="{{ url_for('messages') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Inbox</a></div>
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-md me-3 d-flex align-items-center justify-content-center" style="background: var(--primary-light); color: var(--primary); font-weight: 700; width: 50px; height: 50px;">{{ message.sender.first_name[0] }}{{ message.sender.last_name[0] }}</div>
+                    <div><h5 class="mb-0 fw-bold">{{ message.sender.full_name() }}</h5><small class="text-muted">{{ message.sender.role|title }}</small></div>
+                </div>
+                <small class="text-muted">{{ message.created_at.strftime('%d %b %Y, %I:%M %p') if message.created_at else '' }}</small>
+            </div>
+            {% if message.subject %}<h6 class="fw-bold mb-3">{{ message.subject }}</h6>{% endif %}
+            <p class="text-muted" style="white-space: pre-line;">{{ message.content }}</p>
+        </div>
+        <div class="card-footer bg-transparent"><a href="{{ url_for('compose_message') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-reply me-1"></i>Reply</a></div>
+    </div>
+</div>
+{% endblock %}

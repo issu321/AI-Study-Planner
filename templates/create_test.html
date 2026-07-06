@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Create Test{% endblock %}
+{% block content %}
+<div class="container-fluid" style="max-width: 800px;">
+    <div class="mb-3"><a href="{{ url_for('teacher_tests') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Tests</a></div>
+    <div class="card">
+        <div class="card-header"><h4 class="mb-0"><i class="fas fa-plus-circle text-primary me-2"></i>Create New Test</h4></div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">Test Title <span class="text-danger">*</span></label><input type="text" class="form-control" name="title" placeholder="e.g., Midterm Exam" required></div>
+                    <div class="col-md-6"><label class="form-label">Subject <span class="text-danger">*</span></label>
+                        <select class="form-select" name="subject_id" required><option value="">Select Subject</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+                    </div>
+                    <div class="col-md-3"><label class="form-label">Duration (mins)</label><input type="number" class="form-control" name="duration_minutes" value="60" min="5"></div>
+                    <div class="col-md-3"><label class="form-label">Max Attempts</label><input type="number" class="form-control" name="max_attempts" value="1" min="1"></div>
+                    <div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="2"></textarea></div>
+                    <div class="col-12"><label class="form-label">Instructions</label><textarea class="form-control" name="instructions" rows="3" placeholder="Instructions for students..."></textarea></div>
+                    <div class="col-md-4"><label class="form-label">Total Marks</label><input type="number" class="form-control" name="total_marks" value="100" min="1"></div>
+                    <div class="col-md-4"><label class="form-label">Passing Marks</label><input type="number" class="form-control" name="passing_marks" value="40" min="1"></div>
+                    <div class="col-md-4"><label class="form-label">Start Time</label><input type="datetime-local" class="form-control" name="start_time"></div>
+                    <div class="col-md-6"><label class="form-label">End Time</label><input type="datetime-local" class="form-control" name="end_time"></div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="d-flex gap-3">
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="shuffle_questions" id="shuffle" checked><label class="form-check-label" for="shuffle">Shuffle Questions</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="show_result_immediately" id="showResult" checked><label class="form-check-label" for="showResult">Show Result</label></div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4"><hr><div class="d-flex gap-2 justify-content-end"><a href="{{ url_for('teacher_tests') }}" class="btn btn-outline-secondary">Cancel</a><button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right me-2"></i>Continue to Questions</button></div></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

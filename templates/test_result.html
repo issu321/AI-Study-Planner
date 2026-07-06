@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Result: {{ test.title }}{% endblock %}
+{% block content %}
+<div class="container-fluid" style="max-width: 800px;">
+    <div class="mb-3"><a href="{{ url_for('student_tests') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Tests</a></div>
+    <div class="card mb-4 text-center p-4 {% if attempt.percentage >= 40 %}border-success{% else %}border-danger{% endif %}" style="border-left: 5px solid {% if attempt.percentage >= 40 %}var(--success){% else %}var(--danger){% endif %};">
+        <h3 class="fw-bold mb-2">{{ test.title }} - Result</h3>
+        <div class="my-3">
+            <div class="d-inline-block p-4 rounded-circle {% if attempt.percentage >= 40 %}bg-success{% else %}bg-danger{% endif %} bg-opacity-10">
+                <span class="display-4 fw-bold {% if attempt.percentage >= 40 %}text-success{% else %}text-danger{% endif %}">{{ "%.1f"|format(attempt.percentage) }}%</span>
+            </div>
+        </div>
+        <h5 class="{% if attempt.percentage >= 40 %}text-success{% else %}text-danger{% endif %}">{% if attempt.percentage >= 40 %}Congratulations! You Passed{% else %}Keep Practicing{% endif %}</h5>
+        <div class="row g-3 mt-2 justify-content-center">
+            <div class="col-4"><div class="stat-value">{{ attempt.score }}</div><div class="stat-label">Score</div></div>
+            <div class="col-4"><div class="stat-value">{{ attempt.total_marks }}</div><div class="stat-label">Total</div></div>
+            <div class="col-4"><div class="stat-value">{{ attempt.time_taken_minutes or 'N/A' }}</div><div class="stat-label">Mins</div></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-list text-primary me-2"></i>Answer Review</h5></div>
+        <div class="card-body">
+            {% for q in questions %}
+            {% set student_answer = answers.get(q.id|string, '') %}
+            <div class="mb-4 p-3 rounded {% if q.question_type in ['mcq', 'true_false'] and student_answer == q.correct_answer %}bg-success bg-opacity-10{% else %}bg-danger bg-opacity-10{% endif %}">
+                <p class="fw-semibold mb-2">{{ loop.index }}. {{ q.question_text }}</p>
+                <p class="mb-1 small"><strong>Your Answer:</strong> <span class="{% if q.question_type in ['mcq', 'true_false'] and student_answer == q.correct_answer %}text-success{% else %}text-danger{% endif %}">{{ student_answer or 'Not answered' }}</span></p>
+                {% if q.correct_answer %}<p class="mb-1 small text-success"><strong>Correct Answer:</strong> {{ q.correct_answer }}</p>{% endif %}
+                {% if q.explanation %}<p class="mb-0 small text-muted"><strong>Explanation:</strong> {{ q.explanation }}</p>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

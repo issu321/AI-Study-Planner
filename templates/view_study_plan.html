@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}{{ plan.title }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-3"><a href="{{ url_for('study_planner') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Study Planner</a></div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div><h3 class="fw-bold">{{ plan.title }}</h3><p class="text-muted mb-2">{{ plan.description or 'No description' }}</p>
+                    <div class="d-flex gap-3 text-muted small">
+                        <span><i class="fas fa-clock me-1 text-primary"></i>{{ plan.daily_hours }}h/day</span>
+                        <span><i class="fas fa-calendar me-1 text-primary"></i>{{ plan.created_at.strftime('%d %b %Y') if plan.created_at else '' }}</span>
+                        <span class="badge bg-{{ 'success' if plan.status == 'completed' else 'primary' }}">{{ plan.status|title }}</span>
+                    </div>
+                </div>
+                <form method="POST" action="{{ url_for('delete_study_plan', plan_id=plan.id) }}" onsubmit="return confirm('Delete?');"><button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button></form>
+            </div>
+            <div class="mt-3">
+                <div class="d-flex justify-content-between small mb-1"><span>Progress</span><span>{{ "%.0f"|format(plan.progress_percentage) }}%</span></div>
+                <div class="progress"><div class="progress-bar" data-progress="{{ plan.progress_percentage }}" style="width: 0%"></div></div>
+            </div>
+            <form method="POST" action="{{ url_for('update_plan_progress', plan_id=plan.id) }}" class="mt-2 d-flex gap-2 align-items-center">
+                <label class="small text-muted mb-0">Update:</label>
+                <input type="range" class="form-range flex-fill" name="progress" min="0" max="100" step="5" value="{{ plan.progress_percentage }}" oninput="this.nextElementSibling.value=this.value+'%'"><output class="small fw-semibold" style="width: 45px;">{{ "%.0f"|format(plan.progress_percentage) }}%</output>
+                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+    {% if plan_data.recommendations %}
+    <div class="card mb-4">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-lightbulb text-warning me-2"></i>AI Recommendations</h5></div>
+        <div class="card-body">{% for r in plan_data.recommendations %}<div class="recommendation-card {{ r.type }}"><i class="fas fa-{{ 'exclamation-triangle' if r.type == 'urgent' else 'info-circle' if r.type == 'info' else 'check-circle' if r.type == 'success' else 'lightbulb' }} me-2"></i>{{ r.message }}</div>{% endfor %}</div>
+    </div>
+    {% endif %}
+    {% if plan_data.weekly_schedule %}
+    <h5 class="mb-3"><i class="fas fa-calendar-alt text-primary me-2"></i>Weekly Schedule</h5>
+    <div class="row g-3 mb-4">
+        {% for day in plan_data.weekly_schedule %}
+        <div class="col-12">
+            <div class="schedule-day">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0">{{ day.day_name }}</h6>
+                    <small class="text-muted">{{ day.date[:10] if day.date else '' }}</small>
+                </div>
+                {% if day.assignments_due %}{% for a in day.assignments_due %}<div class="alert alert-danger py-1 px-2 small mb-1"><i class="fas fa-exclamation-circle me-1"></i>Due: {{ a.title }}</div>{% endfor %}{% endif %}
+                {% if day.tests_upcoming %}{% for t in day.tests_upcoming %}<div class="alert alert-info py-1 px-2 small mb-1"><i class="fas fa-clipboard-list me-1"></i>Test: {{ t.title }}</div>{% endfor %}{% endif %}
+                {% if day.sessions %}{% for s in day.sessions %}
+                <div class="schedule-session"><div class="d-flex justify-content-between"><span class="fw-semibold">{{ s.subject_name }}</span><small class="text-muted">{{ s.start_time }} - {{ s.end_time }}</small></div>{% if s.focus_areas %}<small class="text-muted">{% for fa in s.focus_areas %}{{ fa }}{% if not loop.last %} | {% endif %}{% endfor %}</small>{% endif %}</div>
+                {% endfor %}{% else %}<small class="text-muted">No sessions scheduled</small>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

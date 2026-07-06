@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}{{ subject.name }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-3"><a href="{{ url_for('teacher_subjects') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Subjects</a></div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <span class="badge-subject mb-2 d-inline-block">{{ subject.code }}</span>
+                    <h3 class="fw-bold">{{ subject.name }}</h3>
+                    <p class="text-muted mb-0">{{ subject.description or 'No description' }}</p>
+                </div>
+                <span class="badge bg-{{ 'success' if subject.status == 'active' else 'secondary' }}">{{ subject.status|title }}</span>
+            </div>
+            <div class="d-flex gap-3 mt-3 text-muted small">
+                <span><i class="fas fa-layer-group me-1 text-primary"></i>{{ subject.credits }} Credits</span>
+                <span><i class="fas fa-calendar me-1 text-primary"></i>Semester {{ subject.semester }}</span>
+                <span><i class="fas fa-users me-1 text-primary"></i>{{ students|length }} Students</span>
+                <span><i class="fas fa-building me-1 text-primary"></i>{{ subject.department.name if subject.department else 'N/A' }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h6 class="mb-0"><i class="fas fa-file-alt me-2"></i>Materials ({{ materials|length }})</h6>
+                    <a href="{{ url_for('teacher_materials') }}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i></a>
+                </div>
+                <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                    {% if materials %}
+                    <div class="list-group list-group-flush">
+                        {% for m in materials[:10] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div><i class="fas {{ get_file_icon(m.file_type) }} text-primary me-2"></i><small>{{ m.title[:30] }}{% if m.title|length > 30 %}...{% endif %}</small></div>
+                            <small class="text-muted">{{ m.created_at.strftime('%d %b') if m.created_at else '' }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}<div class="p-3 text-center text-muted small">No materials</div>{% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h6 class="mb-0"><i class="fas fa-tasks me-2"></i>Assignments ({{ assignments|length }})</h6>
+                    <a href="{{ url_for('teacher_assignments') }}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i></a>
+                </div>
+                <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                    {% if assignments %}
+                    <div class="list-group list-group-flush">
+                        {% for a in assignments[:10] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div><small class="fw-semibold">{{ a.title[:25] }}{% if a.title|length > 25 %}...{% endif %}</small><br><small class="text-muted">Due: {{ a.due_date.strftime('%d %b') if a.due_date else 'N/A' }}</small></div>
+                            <span class="badge bg-{{ 'danger' if a.is_overdue() else 'warning' }}">{{ 'Overdue' if a.is_overdue() else 'Active' }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}<div class="p-3 text-center text-muted small">No assignments</div>{% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h6 class="mb-0"><i class="fas fa-users me-2"></i>Students ({{ students|length }})</h6>
+                </div>
+                <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                    {% if students %}
+                    <div class="list-group list-group-flush">
+                        {% for s in students %}
+                        <div class="list-group-item d-flex align-items-center">
+                            <div class="avatar-md me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: var(--primary-light); color: var(--primary); border-radius: 50%; font-size: 0.8rem; font-weight: 700;">{{ s.user.first_name[0] }}{{ s.user.last_name[0] }}</div>
+                            <small>{{ s.user.full_name() }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}<div class="p-3 text-center text-muted small">No enrolled students</div>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

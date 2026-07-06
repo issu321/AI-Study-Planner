@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge bg-white text-primary px-3 py-2 rounded-pill">
+                            <i class="fas fa-sparkles me-1"></i> AI-Powered Learning
+                        </span>
+                    </div>
+                    <h1 class="hero-title">Smart Education Management System</h1>
+                    <p class="hero-subtitle">
+                        Revolutionize your academic journey with AI-driven study planning, seamless college management, and intelligent learning tools.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg btn-rounded">
+                            <i class="fas fa-user-plus me-2"></i>Get Started
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg btn-rounded">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-image text-center">
+                    <div class="position-relative d-inline-block">
+                        <div style="width: 400px; height: 400px; background: rgba(255,255,255,0.1); border-radius: 30px; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="fas fa-graduation-cap" style="font-size: 8rem; opacity: 0.9;"></i>
+                        </div>
+                        <!-- Floating elements -->
+                        <div class="position-absolute" style="top: -20px; right: -30px; background: white; color: var(--primary); padding: 1rem; border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); animation: float 4s ease-in-out infinite;">
+                            <i class="fas fa-brain fa-2x"></i>
+                        </div>
+                        <div class="position-absolute" style="bottom: 20px; left: -40px; background: white; color: var(--success); padding: 1rem; border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); animation: float 5s ease-in-out infinite 1s;">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5" style="margin-top: -3rem; position: relative; z-index: 2;">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="stat-card text-center">
+                    <div class="stat-icon bg-primary-soft mx-auto">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.colleges }}</div>
+                    <div class="stat-label">Colleges</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card text-center">
+                    <div class="stat-icon bg-success-soft mx-auto">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.teachers }}</div>
+                    <div class="stat-label">Teachers</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card text-center">
+                    <div class="stat-icon bg-warning-soft mx-auto">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.students }}</div>
+                    <div class="stat-label">Students</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card text-center">
+                    <div class="stat-icon bg-info-soft mx-auto">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.subjects }}</div>
+                    <div class="stat-label">Subjects</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">Powerful Features</h2>
+            <p class="text-muted">Everything you need for effective education management</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h5>Multi-College Management</h5>
+                    <p class="text-muted mb-0">Create and manage multiple colleges with departments, faculty, and students from a single dashboard.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h5>AI Study Planner</h5>
+                    <p class="text-muted mb-0">Get personalized study schedules generated by AI based on your subjects, deadlines, and performance.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h5>Assignments & Tests</h5>
+                    <p class="text-muted mb-0">Create, submit, and grade assignments. Conduct online tests with auto-grading capabilities.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h5>Study Materials</h5>
+                    <p class="text-muted mb-0">Upload and share notes, presentations, documents, and reference materials with students.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>Analytics & Insights</h5>
+                    <p class="text-muted mb-0">Track performance with detailed analytics, progress reports, and AI-powered recommendations.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h5>Communication</h5>
+                    <p class="text-muted mb-0">Built-in messaging system for seamless communication between teachers and students.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Colleges Section -->
+{% if recent_colleges %}
+<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #f0f7ff 100%);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">Featured Colleges</h2>
+            <p class="text-muted">Leading institutions using our platform</p>
+        </div>
+        <div class="row g-4">
+            {% for college in recent_colleges %}
+            <div class="col-md-4">
+                <div class="college-card h-100">
+                    <div class="college-card-banner" style="{% if college.banner_image %}background: url('{{ college.banner_image }}') center/cover;{% endif %}">
+                        <div class="college-card-logo">
+                            {% if college.logo %}
+                                <img src="{{ college.logo }}" alt="{{ college.name }}">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-primary-light text-primary fw-bold" style="font-size: 1.5rem; border-radius: var(--radius);">
+                                    {{ college.name[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="college-card-body">
+                        <h5 class="college-card-title">{{ college.name }}</h5>
+                        <span class="college-card-code">{{ college.code }}</span>
+                        <div class="college-card-meta">
+                            {% if college.city %}
+                                <span><i class="fas fa-map-marker-alt"></i> {{ college.city }}</span>
+                            {% endif %}
+                            {% if college.established_year %}
+                                <span><i class="fas fa-calendar"></i> Est. {{ college.established_year }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="college-card-footer">
+                        <span class="college-status status-{{ college.status }}">{{ college.status|title }}</span>
+                        <a href="{{ url_for('register') }}" class="btn btn-sm btn-primary">Join Now</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="card border-0" style="background: var(--primary-gradient); border-radius: var(--radius-xl);">
+            <div class="card-body p-5 text-center text-white">
+                <h2 class="fw-bold mb-3">Ready to Transform Education?</h2>
+                <p class="mb-4 opacity-75" style="max-width: 500px; margin: 0 auto;">
+                    Join thousands of students and teachers who are already using AI Study Planner to achieve academic excellence.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg btn-rounded">
+                        <i class="fas fa-rocket me-2"></i>Get Started Free
+                    </a>
+                    <a href="{{ url_for('developer') }}" class="btn btn-outline-light btn-lg btn-rounded">
+                        <i class="fas fa-code me-2"></i>Meet the Developer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

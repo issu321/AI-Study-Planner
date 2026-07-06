@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Compose Message{% endblock %}
+{% block content %}
+<div class="container-fluid" style="max-width: 700px;">
+    <div class="mb-3"><a href="{{ url_for('messages') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Messages</a></div>
+    <div class="card">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-pen text-primary me-2"></i>Compose Message</h5></div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3"><label class="form-label">Recipient <span class="text-danger">*</span></label>
+                    <select class="form-select" name="receiver_id" required>
+                        <option value="">Select Recipient</option>
+                        {% for r in recipients %}<option value="{{ r.id }}">{{ r.full_name() }} ({{ r.role|title }})</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3"><label class="form-label">Subject</label><input type="text" class="form-control" name="subject" placeholder="Message subject..."></div>
+                <div class="mb-3"><label class="form-label">Message <span class="text-danger">*</span></label><textarea class="form-control" name="content" rows="6" placeholder="Write your message..." required></textarea></div>
+                <div class="d-flex gap-2 justify-content-end"><a href="{{ url_for('messages') }}" class="btn btn-outline-secondary">Cancel</a><button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-2"></i>Send</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

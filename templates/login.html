@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card animate-scale-in">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h2 class="auth-title">Welcome Back!</h2>
+            <p class="auth-subtitle">Sign in to your account to continue</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('login') }}" data-validate>
+            <div class="mb-3">
+                <label class="form-label">Username or Email</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <input type="text" class="form-control" name="username" placeholder="Enter username or email" required autofocus>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password" required>
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                    <label class="form-check-label" for="remember" style="font-size: 0.85rem;">Remember me</label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 mb-3">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p class="mb-2">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+            <a href="{{ url_for('index') }}" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Home</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
+{% endblock %}

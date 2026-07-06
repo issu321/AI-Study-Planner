@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title"><i class="fas fa-chalkboard-teacher text-primary me-2"></i>Teacher Dashboard</h2>
+            <p class="page-subtitle">Welcome back, {{ current_user.full_name() }}</p>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">My Subjects</div>
+                        <div class="stat-value">{{ stats.my_subjects }}</div>
+                    </div>
+                    <div class="stat-icon bg-primary-soft"><i class="fas fa-book"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">My Students</div>
+                        <div class="stat-value">{{ stats.my_students }}</div>
+                    </div>
+                    <div class="stat-icon bg-success-soft"><i class="fas fa-user-graduate"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Materials</div>
+                        <div class="stat-value">{{ stats.my_materials }}</div>
+                    </div>
+                    <div class="stat-icon bg-warning-soft"><i class="fas fa-file-alt"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Pending Submissions</div>
+                        <div class="stat-value">{{ stats.pending_submissions }}</div>
+                    </div>
+                    <div class="stat-icon bg-danger-soft"><i class="fas fa-clock"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Recent Submissions -->
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('teacher_subjects') }}" class="btn btn-outline-primary text-start">
+                            <i class="fas fa-book me-2"></i>Manage Subjects
+                        </a>
+                        <a href="{{ url_for('teacher_materials') }}" class="btn btn-outline-success text-start">
+                            <i class="fas fa-file-upload me-2"></i>Upload Materials
+                        </a>
+                        <a href="{{ url_for('teacher_assignments') }}" class="btn btn-outline-warning text-start">
+                            <i class="fas fa-tasks me-2"></i>Create Assignment
+                        </a>
+                        <a href="{{ url_for('create_test') }}" class="btn btn-outline-info text-start">
+                            <i class="fas fa-clipboard-list me-2"></i>Create Test
+                        </a>
+                        <a href="{{ url_for('teacher_students') }}" class="btn btn-outline-secondary text-start">
+                            <i class="fas fa-user-graduate me-2"></i>Manage Students
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-inbox text-primary me-2"></i>Recent Submissions</h5>
+                    <a href="{{ url_for('teacher_assignments') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if stats.recent_submissions %}
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Student</th>
+                                    <th>Assignment</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th class="pe-4 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sub in stats.recent_submissions %}
+                                <tr>
+                                    <td class="ps-4">{{ sub.student.user.full_name() }}</td>
+                                    <td>{{ sub.assignment.title[:30] }}{% if sub.assignment.title|length > 30 %}...{% endif %}</td>
+                                    <td><small class="text-muted">{{ sub.submitted_at.strftime('%d %b, %H:%M') if sub.submitted_at else 'N/A' }}</small></td>
+                                    <td><span class="badge bg-{{ 'success' if sub.status == 'graded' else 'warning' }}">{{ sub.status|title }}</span></td>
+                                    <td class="pe-4 text-end">
+                                        <a href="{{ url_for('view_submissions', assignment_id=sub.assignment_id) }}" class="btn btn-sm btn-primary">Grade</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-4">
+                        <div class="empty-state-icon" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <p class="text-muted">No submissions yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

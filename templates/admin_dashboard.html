@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title"><i class="fas fa-th-large text-primary me-2"></i>Admin Dashboard</h2>
+            <p class="page-subtitle">Overview of your education management system</p>
+        </div>
+        <a href="{{ url_for('create_college') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Create College
+        </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Total Colleges</div>
+                        <div class="stat-value">{{ stats.total_colleges }}</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-check-circle"></i> {{ stats.active_colleges }} Active
+                        </div>
+                    </div>
+                    <div class="stat-icon bg-primary-soft">
+                        <i class="fas fa-university"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Total Teachers</div>
+                        <div class="stat-value">{{ stats.total_teachers }}</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i> Registered Faculty
+                        </div>
+                    </div>
+                    <div class="stat-icon bg-success-soft">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-value">{{ stats.total_students }}</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i> Enrolled Learners
+                        </div>
+                    </div>
+                    <div class="stat-icon bg-warning-soft">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Total Subjects</div>
+                        <div class="stat-value">{{ stats.total_subjects }}</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-book"></i> Active Courses
+                        </div>
+                    </div>
+                    <div class="stat-icon bg-info-soft">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Study Materials</div>
+                        <div class="stat-value">{{ stats.total_materials }}</div>
+                    </div>
+                    <div class="stat-icon bg-primary-soft">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Assignments</div>
+                        <div class="stat-value">{{ stats.total_assignments }}</div>
+                    </div>
+                    <div class="stat-icon bg-success-soft">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label">Tests Created</div>
+                        <div class="stat-value">{{ stats.total_tests }}</div>
+                    </div>
+                    <div class="stat-icon bg-warning-soft">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('create_college') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-university fa-lg mb-2 d-block"></i>
+                                <span class="fw-semibold">Create College</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('admin_colleges') }}" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-list fa-lg mb-2 d-block"></i>
+                                <span class="fw-semibold">View Colleges</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('admin_users') }}" class="btn btn-outline-info w-100 py-3">
+                                <i class="fas fa-users fa-lg mb-2 d-block"></i>
+                                <span class="fw-semibold">Manage Users</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('admin_analytics') }}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="fas fa-chart-line fa-lg mb-2 d-block"></i>
+                                <span class="fw-semibold">Analytics</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-history text-primary me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if stats.recent_activities %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <tbody>
+                                {% for activity in stats.recent_activities %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-3">
+                                                {% if 'create' in activity.action %}
+                                                    <div class="stat-icon bg-success-soft" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                        <i class="fas fa-plus text-success"></i>
+                                                    </div>
+                                                {% elif 'delete' in activity.action %}
+                                                    <div class="stat-icon bg-danger-soft" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                        <i class="fas fa-trash text-danger"></i>
+                                                    </div>
+                                                {% elif 'login' in activity.action %}
+                                                    <div class="stat-icon bg-primary-soft" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                        <i class="fas fa-sign-in-alt text-primary"></i>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="stat-icon bg-info-soft" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                        <i class="fas fa-info text-info"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold" style="font-size: 0.9rem;">{{ activity.action|replace('_', ' ')|title }}</div>
+                                                <small class="text-muted">{{ activity.details or 'No details' }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <small class="text-muted">{{ activity.created_at.strftime('%d %b, %I:%M %p') if activity.created_at else 'N/A' }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-4">
+                        <div class="empty-state-icon" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <p class="text-muted">No recent activity</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle text-info me-2"></i>System Info</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="info-label">Application</span>
+                        <span class="info-value">{{ app_name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Version</span>
+                        <span class="info-value">{{ app_version }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Developer</span>
+                        <span class="info-value">{{ developer_name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Departments</span>
+                        <span class="info-value">{{ stats.total_departments }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Submissions</span>
+                        <span class="info-value">{{ stats.total_submissions }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="page-title"><i class="fas fa-bell text-primary me-2"></i>Notifications</h2></div>
+        <a href="{{ url_for('mark_all_notifications_read') }}" class="btn btn-outline-primary btn-sm">Mark All Read</a>
+    </div>
+    <div class="card">
+        <div class="card-body p-0">
+            {% if notifications.items %}
+            <div class="list-group list-group-flush">
+                {% for n in notifications.items %}
+                <div class="list-group-item d-flex justify-content-between align-items-center p-3 {% if not n.is_read %}bg-primary bg-opacity-5{% endif %}">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3"><div class="stat-icon bg-{{ 'primary' if n.notification_type == 'assignment' else 'success' if n.notification_type == 'test' else 'warning' if n.notification_type == 'announcement' else 'info' }}-soft" style="width: 40px; height: 40px; font-size: 0.9rem;"><i class="fas fa-{{ 'tasks' if n.notification_type == 'assignment' else 'clipboard-list' if n.notification_type == 'test' else 'bullhorn' if n.notification_type == 'announcement' else 'envelope' }}"></i></div></div>
+                        <div><div class="fw-semibold {% if not n.is_read %}text-dark{% else %}text-muted{% endif %}">{{ n.title }}</div><small class="text-muted">{{ n.message }}</small></div>
+                    </div>
+                    <div class="text-end flex-shrink-0">
+                        <small class="text-muted d-block">{{ n.created_at.strftime('%d %b') if n.created_at else '' }}</small>
+                        {% if not n.is_read %}<a href="{{ url_for('mark_notification_read', notification_id=n.id) }}" class="badge bg-primary">Mark Read</a>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}<div class="empty-state py-5"><div class="empty-state-icon" style="width: 60px; height: 60px; font-size: 1.5rem;"><i class="fas fa-bell"></i></div><p class="text-muted">No notifications</p></div>{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

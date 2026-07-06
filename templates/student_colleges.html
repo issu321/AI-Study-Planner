@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Browse Colleges{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="page-title"><i class="fas fa-university text-primary me-2"></i>Browse Colleges</h2><p class="page-subtitle">Find and join your college</p></div>
+        <form method="GET" class="d-flex gap-2">
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" class="form-control" name="search" placeholder="Search colleges..." value="{{ search or '' }}"></div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+    {% if colleges.items %}
+    <div class="row g-4">
+        {% for college in colleges.items %}
+        <div class="col-md-6 col-lg-4">
+            <div class="college-card h-100">
+                <div class="college-card-banner" style="{% if college.banner_image %}background: url('{{ college.banner_image }}') center/cover;{% endif %}"><div class="college-card-logo">{% if college.logo %}<img src="{{ college.logo }}" alt="">{% else %}<div class="d-flex align-items-center justify-content-center h-100 fw-bold" style="background: var(--primary-light); color: var(--primary); font-size: 1.5rem;">{{ college.name[0] }}</div>{% endif %}</div></div>
+                <div class="college-card-body">
+                    <h5 class="college-card-title">{{ college.name }}</h5>
+                    <span class="college-card-code">{{ college.code }}</span>
+                    <p class="text-muted small mt-2">{{ college.description[:80] if college.description else '' }}{% if college.description and college.description|length > 80 %}...{% endif %}</p>
+                    <div class="college-card-meta">{% if college.city %}<span><i class="fas fa-map-marker-alt"></i> {{ college.city }}</span>{% endif %}<span><i class="fas fa-users"></i> {{ college.total_students }} Students</span></div>
+                </div>
+                <div class="college-card-footer"><span class="college-status status-{{ college.status }}">{{ college.status|title }}</span><a href="{{ url_for('view_college_detail', college_id=college.id) }}" class="btn btn-sm btn-primary">View Details</a></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state py-5"><div class="empty-state-icon"><i class="fas fa-university"></i></div><h5 class="empty-state-title">No Colleges Found</h5><p class="empty-state-text">Try a different search or check back later</p></div>
+    {% endif %}
+</div>
+{% endblock %}
